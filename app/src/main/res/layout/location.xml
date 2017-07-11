@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <TextView
+        android:id="@+id/gpsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gpsTitle"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        />
+
+    <TextView
+        android:id="@+id/gpsValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/gpsText"
+        android:layout_alignTop="@id/gpsText"
+        android:layout_marginStart="20dp"
+        android:textSize="15sp"
+        />
+
+    <TextView
+        android:id="@+id/accelerometerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/accelerometerTitle"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_below="@id/gpsValue"
+        />
+
+    <TextView
+        android:id="@+id/accelerometerValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/accelerometerText"
+        android:layout_alignTop="@id/accelerometerText"
+        android:layout_marginStart="20dp"
+        android:textSize="15sp"
+        />
+
+    <TextView
+        android:id="@+id/gyroscopeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gyroscopeTitle"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_below="@id/accelerometerValue"
+        />
+
+    <TextView
+        android:id="@+id/gyroscopeValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/gyroscopeText"
+        android:layout_alignTop="@id/gyroscopeText"
+        android:layout_marginStart="20dp"
+        android:textSize="15sp"
+        />
+
+</RelativeLayout>
