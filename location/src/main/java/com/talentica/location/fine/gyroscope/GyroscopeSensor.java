@@ -1,4 +1,4 @@
-package com.talentica.location.fine.sensors.gyroscope;
+package com.talentica.location.fine.gyroscope;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,10 +8,10 @@ import android.hardware.SensorManager;
 import android.util.Log;
 
 import com.talentica.domain.Gyroscope;
-import com.talentica.location.fine.sensors.SensorMain;
+import com.talentica.location.fine.SensorMain;
 
 /**
- * Created by uday.agarwal@signtrace.com on 10-05-2017.
+ * Created by uday.agarwal@talentica.com on 10-05-2017.
  */
 
 public class GyroscopeSensor implements SensorMain {

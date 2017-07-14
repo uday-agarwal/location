@@ -1,14 +1,14 @@
-package com.talentica.location.fine.sensors.accelerometer;
+package com.talentica.location.fine.accelerometer;
 
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
-import android.util.Log;
 
 import com.talentica.domain.Accelerometer;
-import com.talentica.location.fine.sensors.SensorMain;
+import com.talentica.location.filter.FilterManager;
+import com.talentica.location.fine.SensorMain;
 
 /**
  * Created by uday.agarwal@talentica.com on 05-05-2017.
@@ -20,6 +20,8 @@ public class AccelerometerSensor implements SensorMain  {
     private final SensorManager sensorManager;
     private final Sensor accelerometer;
 
+    private FilterManager filterManager;
+
     public AccelerometerSensor(Callback callback, Context context) {
         this.callback = callback;
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -28,7 +30,7 @@ public class AccelerometerSensor implements SensorMain  {
 
     @Override
     public void start(Activity activity) {
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
@@ -44,14 +46,16 @@ public class AccelerometerSensor implements SensorMain  {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-            Log.d("Accelerometer", String.valueOf(event.values[0]) + ", " + String.valueOf(event.values[1]) + ", " + String.valueOf(event.values[2]));
-
             Accelerometer.Builder builder = new Accelerometer.Builder();
+//            builder.setXAxis(filterManager.process(event.values[0]));
+//            builder.setYAxis(filterManager.process(event.values[1]));
+//            builder.setZAxis(filterManager.process(event.values[2]));
             builder.setXAxis(event.values[0]);
             builder.setYAxis(event.values[1]);
             builder.setZAxis(event.values[2]);
 
-            callback.onUpdateAccelerometer(builder.build());}
+            callback.onUpdateAccelerometer(builder.build());
+        }
     }
 
     @Override

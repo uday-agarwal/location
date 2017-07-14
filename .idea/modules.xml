@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/LocationDetection.iml" filepath="$PROJECT_DIR$/LocationDetection.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/location/location.iml" filepath="$PROJECT_DIR$/location/location.iml" />
+      <module fileurl="file://$PROJECT_DIR$/location.iml" filepath="$PROJECT_DIR$/location.iml" />
+      <module fileurl="file://$PROJECT_DIR$/location/location-location.iml" filepath="$PROJECT_DIR$/location/location-location.iml" />
     </modules>
   </component>
 </project>

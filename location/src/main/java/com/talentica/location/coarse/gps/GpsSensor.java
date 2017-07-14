@@ -77,7 +77,7 @@ public class GpsSensor implements CoarseLocation {
         builder.setLongitude(location.getLongitude());
 
         Position newPosition = builder.build();
-        callback.onUpdateLocation(newPosition);
+        callback.onUpdateGPS(newPosition);
 
         Log.d("Position", location.toString());
     }
@@ -98,7 +98,7 @@ public class GpsSensor implements CoarseLocation {
     }
 
     public interface Callback{
-        void onUpdateLocation(Position newPosition);
+        void onUpdateGPS(Position newPosition);
 
         void permissionNotGranted();
     }
