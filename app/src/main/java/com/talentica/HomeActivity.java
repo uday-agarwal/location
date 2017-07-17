@@ -25,7 +25,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Call
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.add(R.id.homeActivityContainer, HomeFragment.newInstance(), "home_fragment");
-        transaction.addToBackStack(null);
         transaction.commit();
     }
 

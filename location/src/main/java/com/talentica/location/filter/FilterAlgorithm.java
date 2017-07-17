@@ -5,8 +5,5 @@ package com.talentica.location.filter;
  */
 
 public enum FilterAlgorithm {
-
-    KALMAN_FILTER,
-    MOVING_MEDIAN_WITH_AVG,
-    BASELINE_FILTER
+    MEDIAN_FILTER
 }

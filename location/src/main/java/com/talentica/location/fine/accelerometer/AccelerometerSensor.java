@@ -8,7 +8,10 @@ import android.hardware.SensorManager;
 
 import com.talentica.domain.Accelerometer;
 import com.talentica.location.filter.FilterManager;
+import com.talentica.location.filter.FilterManagerImpl;
 import com.talentica.location.fine.SensorMain;
+
+import com.talentica.domain.DataType;
 
 /**
  * Created by uday.agarwal@talentica.com on 05-05-2017.
@@ -30,7 +33,8 @@ public class AccelerometerSensor implements SensorMain  {
 
     @Override
     public void start(Activity activity) {
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        filterManager = FilterManagerImpl.init();
     }
 
     @Override
@@ -47,12 +51,12 @@ public class AccelerometerSensor implements SensorMain  {
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
             Accelerometer.Builder builder = new Accelerometer.Builder();
-//            builder.setXAxis(filterManager.process(event.values[0]));
-//            builder.setYAxis(filterManager.process(event.values[1]));
-//            builder.setZAxis(filterManager.process(event.values[2]));
-            builder.setXAxis(event.values[0]);
-            builder.setYAxis(event.values[1]);
-            builder.setZAxis(event.values[2]);
+            builder.setxAxisRaw(event.values[0]);
+            builder.setyAxisRaw(event.values[1]);
+            builder.setzAxisRaw(event.values[2]);
+            builder.setXAxisFiltered(filterManager.process(DataType.ACCELEROMETER_0, event.values[0]));
+            builder.setYAxisFiltered(filterManager.process(DataType.ACCELEROMETER_1, event.values[1]));
+            builder.setZAxisFiltered(filterManager.process(DataType.ACCELEROMETER_2, event.values[2]));
 
             callback.onUpdateAccelerometer(builder.build());
         }
@@ -60,10 +64,11 @@ public class AccelerometerSensor implements SensorMain  {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        callback.onAccelerometerAccuracyChanged(sensor, accuracy);
     }
 
     public interface Callback {
         void onUpdateAccelerometer(Accelerometer value);
+        void onAccelerometerAccuracyChanged(Sensor sensor, int accuracy);
     }
 }

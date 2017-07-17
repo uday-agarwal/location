@@ -1,16 +1,24 @@
 package com.talentica;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.opencsv.CSVWriter;
 import com.talentica.domain.Accelerometer;
+import com.talentica.domain.DataType;
 import com.talentica.domain.Gyroscope;
 import com.talentica.domain.Position;
 import com.talentica.location.coarse.CoarseLocation;
@@ -19,6 +27,12 @@ import com.talentica.location.fine.FineLocation;
 import com.talentica.location.fine.accelerometer.AccelerometerSensor;
 import com.talentica.location.fine.gyroscope.GyroscopeSensor;
 import com.talentica.locationDetection.R;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
 
 /**
  * Created by uday.agarwal@talentica.com on 12-07-2017.
@@ -80,7 +94,7 @@ public class HomeFragment extends Fragment implements Sensors {
         super.onResume();
         gpsSensor.start(getActivity());
         accelerometerSensor.start(getActivity());
-        gyroscopeSensor.start(getActivity());
+//        gyroscopeSensor.start(getActivity());
     }
 
     @Override
@@ -109,9 +123,18 @@ public class HomeFragment extends Fragment implements Sensors {
 
     @Override
     public void onUpdateAccelerometer(Accelerometer value) {
-        accelerometerValue.setText(String.valueOf(value.getXAxis()) + "\n" +
-                String.valueOf(value.getYAxis()) + "\n" +
-                String.valueOf(value.getZAxis()));
+        accelerometerValue.setText(String.valueOf(value.getXAxisFiltered()) + "\n" +
+                String.valueOf(value.getYAxisFiltered()) + "\n" +
+                String.valueOf(value.getZAxisFiltered()));
+
+        updateCSV(DataType.ACCELEROMETER, value);
+    }
+
+    @Override
+    public void onAccelerometerAccuracyChanged(Sensor sensor, int accuracy) {
+        if(getView() != null) {
+//            Snackbar.make(getView(), "Accelerometer accuracy changed", Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -123,13 +146,55 @@ public class HomeFragment extends Fragment implements Sensors {
 
     @Override
     public void permissionNotGranted() {
-        Toast.makeText(getContext(), "What!!! No permissions bro??? Duh...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "What!!! No permissions??? Duh...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         gpsSensor.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    void updateCSV(DataType d, Accelerometer value) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(PackageManager.PERMISSION_DENIED == getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                requestPermissions(permission,123);
+            }
+        }
+
+        switch(d) {
+            case ACCELEROMETER:
+                accelerometerCsv(value);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    void accelerometerCsv(Accelerometer value) {
+        String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String fileName = "Accelerometer.csv";
+        String filePath = baseDir + File.separator + fileName;
+        CSVWriter csvWriter;
+
+        try {
+            csvWriter = new CSVWriter(new FileWriter(filePath, true));
+
+            ArrayList<String> row = new ArrayList<>();
+            row.add(String.valueOf(value.getXAxisRaw()));
+            row.add(String.valueOf(value.getXAxisFiltered()));
+            row.add(String.valueOf(value.getYAxisRaw()));
+            row.add(String.valueOf(value.getYAxisFiltered()));
+            row.add(String.valueOf(value.getZAxisRaw()));
+            row.add(String.valueOf(value.getZAxisFiltered()));
+            csvWriter.writeNext(row.toArray(new String[0]));
+            csvWriter.close();
+        } catch (IOException e) {
+            Log.d("Calibration_log", "Failed to open log file");
+        }
+
     }
 
     interface Callback {
