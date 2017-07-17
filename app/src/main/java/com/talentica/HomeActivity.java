@@ -16,9 +16,12 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Call
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.container_activity);
+        setContentView(R.layout.home_activity);
         rootView = findViewById(R.id.homeActivityContainer);
-        addHomeFragment();
+
+        if(savedInstanceState == null) {
+            addHomeFragment();
+        }
     }
 
     void addHomeFragment() {
