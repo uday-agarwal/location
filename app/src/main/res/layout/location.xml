@@ -66,28 +66,37 @@
         android:layout_toEndOf="@id/gyroscopeText"
         android:layout_alignTop="@id/gyroscopeText"
         android:layout_marginStart="20dp"
-        android:textSize="15sp"
-        />
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/logButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/logData"
-        android:layout_marginBottom="50dp"
         android:padding="20dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/accelerometerText" />
+        android:layout_alignBaseline="@+id/clearLogButton"
+        android:layout_alignBottom="@+id/clearLogButton"
+        android:layout_toEndOf="@+id/gpsText" />
 
     <Button
         android:id="@+id/clearLogButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/clearLogs"
-        android:layout_alignBaseline="@+id/logButton"
-        android:layout_alignBottom="@+id/logButton"
+        android:padding="20dp"
+        android:layout_marginBottom="18dp"
+        android:layout_above="@+id/sendEmailButton"
         android:layout_alignStart="@+id/accelerometerValue"
-        android:layout_marginStart="20dp"
-        android:padding="20dp"/>
+        android:layout_marginStart="32dp" />
+
+    <Button
+        android:id="@+id/sendEmailButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:text="@string/sendEmail"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

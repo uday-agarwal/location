@@ -6,4 +6,5 @@
     <string name="logData">Log Data</string>
     <string name="clearLogs">Clear Logs</string>
     <string name="stopLoggingData">Stop Logging</string>
+    <string name="sendEmail">Email</string>
 </resources>

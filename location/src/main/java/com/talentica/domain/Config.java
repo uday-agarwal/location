@@ -8,5 +8,5 @@ import com.talentica.location.filter.FilterAlgorithm;
 
 public final class Config {
     public static final FilterAlgorithm FILTER_ALGORITHM = FilterAlgorithm.MEDIAN_FILTER;
-
+    public static final String DEFAULT_EMAIL_RECEIVER = "uday.agarwal@talentica.com";
 }

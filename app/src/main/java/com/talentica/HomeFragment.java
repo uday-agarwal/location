@@ -1,8 +1,10 @@
 package com.talentica;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import com.opencsv.CSVWriter;
 import com.talentica.domain.Accelerometer;
+import com.talentica.domain.Config;
 import com.talentica.domain.Gyroscope;
 import com.talentica.domain.Position;
 import com.talentica.location.coarse.CoarseLocation;
@@ -50,6 +53,7 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
     private TextView gyroscopeValue;
     private Button logDataButton;
     private Button clearLogsButton;
+    private Button sendEmailButton;
 
     private CoarseLocation gpsSensor;
     private FineLocation accelerometerSensor;
@@ -90,12 +94,15 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
         gyroscopeValue = (TextView) rootView.findViewById(R.id.gyroscopeValue);
         logDataButton = (Button) rootView.findViewById(R.id.logButton);
         clearLogsButton = (Button) rootView.findViewById(R.id.clearLogButton);
+        sendEmailButton = (Button) rootView.findViewById(R.id.sendEmailButton);
 
         logDataButton.setEnabled(true);
         clearLogsButton.setEnabled(true);
+        sendEmailButton.setEnabled(true);
 
         logDataButton.setOnClickListener(this);
         clearLogsButton.setOnClickListener(this);
+        sendEmailButton.setOnClickListener(this);
     }
 
     void initSensors() {
@@ -136,6 +143,10 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
 
             case R.id.clearLogButton:
                 clearAllLogs();
+                break;
+
+            case R.id.sendEmailButton:
+                sendEmail(Config.DEFAULT_EMAIL_RECEIVER, new File(accelerometerFile));
                 break;
 
             default:
@@ -312,6 +323,23 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
             } catch (IOException e) {
                 Log.d("File_log", "Failed to log gyroscope data.");
             }
+        }
+    }
+
+    void sendEmail(String receiver, File file) {
+        String emailSubject = "Location Detection - log attached";
+        String emailBody = "Log attached.";
+        Intent i = new Intent(Intent.ACTION_SEND);
+
+        i.setType("message/rfc822");
+        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{receiver});
+        i.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
+        i.putExtra(Intent.EXTRA_TEXT   , emailBody);
+        i.putExtra(Intent.EXTRA_STREAM , Uri.fromFile(file));
+        try {
+            startActivity(Intent.createChooser(i, "Send mail..."));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(getActivity(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
         }
     }
 
