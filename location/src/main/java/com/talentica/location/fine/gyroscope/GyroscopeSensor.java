@@ -44,14 +44,13 @@ public class GyroscopeSensor implements SensorMain {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            Log.d("Gyroscope", String.valueOf(event.values[0]) + ", " +
-                                String.valueOf(event.values[1]) + ", " +
-                                String.valueOf(event.values[2]));
-
             Gyroscope.Builder builder = new Gyroscope.Builder();
-            builder.setXAxis(event.values[0]);
-            builder.setYAxis(event.values[1]);
-            builder.setZAxis(event.values[2]);
+            builder.setXAxisRaw(event.values[0]);
+            builder.setYAxisRaw(event.values[1]);
+            builder.setZAxisRaw(event.values[2]);
+            builder.setXAxisFiltered(event.values[0]);
+            builder.setYAxisFiltered(event.values[1]);
+            builder.setZAxisFiltered(event.values[2]);
 
             callback.onUpdateGyroscope(builder.build());
         }
