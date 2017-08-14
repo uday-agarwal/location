@@ -3,6 +3,7 @@
     <string name="gpsTitle">GPS:</string>
     <string name="accelerometerTitle">Accelerometer:</string>
     <string name="gyroscopeTitle">Gyroscope:</string>
+    <string name="magnetometerTitle">Magnetometer:</string>
     <string name="logData">Log Data</string>
     <string name="clearLogs">Clear Logs</string>
     <string name="stopLoggingData">Stop Logging</string>

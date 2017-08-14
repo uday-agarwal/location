@@ -28,7 +28,7 @@ public class GyroscopeSensor implements SensorMain {
 
     @Override
     public void start(Activity activity) {
-        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override

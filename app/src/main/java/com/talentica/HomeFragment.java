@@ -24,12 +24,14 @@ import com.opencsv.CSVWriter;
 import com.talentica.domain.Accelerometer;
 import com.talentica.domain.Config;
 import com.talentica.domain.Gyroscope;
+import com.talentica.domain.Magnetometer;
 import com.talentica.domain.Position;
 import com.talentica.location.coarse.CoarseLocation;
 import com.talentica.location.coarse.gps.GpsSensor;
 import com.talentica.location.fine.FineLocation;
 import com.talentica.location.fine.accelerometer.AccelerometerSensor;
 import com.talentica.location.fine.gyroscope.GyroscopeSensor;
+import com.talentica.location.fine.magnetometer.MagnetometerSensor;
 import com.talentica.locationDetection.R;
 
 import java.io.File;
@@ -51,13 +53,13 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
     private TextView gpsValue;
     private TextView accelerometerValue;
     private TextView gyroscopeValue;
+    private TextView magnetoMeterValue;
     private Button logDataButton;
-    private Button clearLogsButton;
-    private Button sendEmailButton;
 
     private CoarseLocation gpsSensor;
     private FineLocation accelerometerSensor;
     private FineLocation gyroscopeSensor;
+    private FineLocation magnetoMeterSensor;
 
     private Boolean isLogEnabled = false;
     private String accelerometerFile;
@@ -92,9 +94,10 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
         gpsValue = (TextView) rootView.findViewById(R.id.gpsValue);
         accelerometerValue = (TextView) rootView.findViewById(R.id.accelerometerValue);
         gyroscopeValue = (TextView) rootView.findViewById(R.id.gyroscopeValue);
+        magnetoMeterValue = (TextView) rootView.findViewById(R.id.magnetoMeterValue);
         logDataButton = (Button) rootView.findViewById(R.id.logButton);
-        clearLogsButton = (Button) rootView.findViewById(R.id.clearLogButton);
-        sendEmailButton = (Button) rootView.findViewById(R.id.sendEmailButton);
+        Button clearLogsButton = (Button) rootView.findViewById(R.id.clearLogButton);
+        Button sendEmailButton = (Button) rootView.findViewById(R.id.sendEmailButton);
 
         logDataButton.setEnabled(true);
         clearLogsButton.setEnabled(true);
@@ -109,6 +112,7 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
         gpsSensor = new GpsSensor(this, getContext());
         accelerometerSensor = new AccelerometerSensor(this, getContext());
         gyroscopeSensor = new GyroscopeSensor(this, getContext());
+        magnetoMeterSensor = new MagnetometerSensor(this, getContext());
     }
 
     @Override
@@ -117,6 +121,7 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
         gpsSensor.start(getActivity());
         accelerometerSensor.start(getActivity());
         gyroscopeSensor.start(getActivity());
+        magnetoMeterSensor.start(getActivity());
     }
 
     @Override
@@ -125,6 +130,7 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
         gpsSensor.stop();
         accelerometerSensor.stop();
         gyroscopeSensor.stop();
+        magnetoMeterSensor.stop();
     }
 
     @Override
@@ -142,11 +148,20 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
                 break;
 
             case R.id.clearLogButton:
+                isLogEnabled = false;
+                logDataButton.setText(R.string.logData);
                 clearAllLogs();
                 break;
 
             case R.id.sendEmailButton:
-                sendEmail(Config.DEFAULT_EMAIL_RECEIVER, new File(accelerometerFile));
+                if(accelerometerFile != null && gyroscopeFile != null) {
+                    File [] files = {new File(accelerometerFile), new File(gyroscopeFile)};
+                    sendEmail(Config.DEFAULT_EMAIL_RECEIVER, files);
+                } else {
+                    if(getView() != null) {
+                        Snackbar.make(getView(), "No log file to send!", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
                 break;
 
             default:
@@ -193,8 +208,16 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
                 String.valueOf(value.getYAxisFiltered()) + "\n" +
                 String.valueOf(value.getZAxisFiltered()));
 
-//        checkDiskWritePermissions();
-//        gyroscopeCsv(value);
+        checkDiskWritePermissions();
+        gyroscopeCsv(value);
+    }
+
+    @Override
+    public void onUpdateMagnetometer(Magnetometer value) {
+        magnetoMeterValue.setText(String.valueOf(value.getXAxisFiltered()) + "\n" +
+                String.valueOf(value.getYAxisFiltered()) + "\n" +
+                String.valueOf(value.getZAxisFiltered()));
+
     }
 
     @Override
@@ -229,12 +252,13 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
             csvWriter = new CSVWriter(new FileWriter(accfilePath));
 
             ArrayList<String> row = new ArrayList<>();
-            row.add("x Raw");
-            row.add("x Filtered");
-            row.add("y Raw");
-            row.add("y Filtered");
-            row.add("z Raw");
-            row.add("z Filtered");
+            row.add("Timestamp");
+            row.add("Ax Raw");
+            row.add("Ax Filtered");
+            row.add("Ay Raw");
+            row.add("Ay Filtered");
+            row.add("Az Raw");
+            row.add("Az Filtered");
             csvWriter.writeNext(row.toArray(new String[0]));
             csvWriter.close();
             Log.d("Log", "Accelerometer log file created");
@@ -243,26 +267,27 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
             Log.d("File_log", "Failed to create accelerometer log file.");
         }
 
-//        String gyroFileName = "Gyroscope-" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + ".csv";
-//        String gyroFilePath = baseDir + File.separator + gyroFileName;
-//
-//        try {
-//            csvWriter = new CSVWriter(new FileWriter(gyroFilePath));
-//
-//            ArrayList<String> row = new ArrayList<>();
-//            row.add("x Raw");
-//            row.add("x Filtered");
-//            row.add("y Raw");
-//            row.add("y Filtered");
-//            row.add("z Raw");
-//            row.add("z Filtered");
-//            csvWriter.writeNext(row.toArray(new String[0]));
-//            csvWriter.close();
-//            Log.d("Log", "Gyroscope log file created");
-//            gyroscopeFile = gyroFilePath;
-//        } catch (IOException e) {
-//            Log.d("File_log", "Failed to create gyroscope log file.");
-//        }
+        String gyroFileName = "Gyroscope-" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + ".csv";
+        String gyroFilePath = baseDir + File.separator + gyroFileName;
+
+        try {
+            csvWriter = new CSVWriter(new FileWriter(gyroFilePath));
+
+            ArrayList<String> row = new ArrayList<>();
+            row.add("Timestamp");
+            row.add("Gx Raw");
+            row.add("Gx Filtered");
+            row.add("Gy Raw");
+            row.add("Gy Filtered");
+            row.add("Gz Raw");
+            row.add("Gz Filtered");
+            csvWriter.writeNext(row.toArray(new String[0]));
+            csvWriter.close();
+            Log.d("Log", "Gyroscope log file created");
+            gyroscopeFile = gyroFilePath;
+        } catch (IOException e) {
+            Log.d("File_log", "Failed to create gyroscope log file.");
+        }
 
     }
 
@@ -278,6 +303,9 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
             }
         }
 
+        accelerometerFile = null;
+        gyroscopeFile = null;
+
         if(getView() != null) {
             Snackbar.make(getView(), "All logs cleared.", Snackbar.LENGTH_SHORT).show();
         }
@@ -290,6 +318,7 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
                 csvWriter = new CSVWriter(new FileWriter(accelerometerFile, true));
 
                 ArrayList<String> row = new ArrayList<>();
+                row.add(new SimpleDateFormat("HH:mm:ss:SSS").format(new Date()));
                 row.add(String.valueOf(value.getXAxisRaw()));
                 row.add(String.valueOf(value.getXAxisFiltered()));
                 row.add(String.valueOf(value.getYAxisRaw()));
@@ -312,6 +341,7 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
                 csvWriter = new CSVWriter(new FileWriter(gyroscopeFile, true));
 
                 ArrayList<String> row = new ArrayList<>();
+                row.add(new SimpleDateFormat("HH:mm:ss:SSS").format(new Date()));
                 row.add(String.valueOf(value.getXAxisRaw()));
                 row.add(String.valueOf(value.getXAxisFiltered()));
                 row.add(String.valueOf(value.getYAxisRaw()));
@@ -326,18 +356,24 @@ public class HomeFragment extends Fragment implements Sensors, View.OnClickListe
         }
     }
 
-    void sendEmail(String receiver, File file) {
+    void sendEmail(String receiver, File[] files) {
         String emailSubject = "Location Detection - log attached";
         String emailBody = "Log attached.";
-        Intent i = new Intent(Intent.ACTION_SEND);
+        Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        ArrayList<Uri> uris = new ArrayList<>();
 
-        i.setType("message/rfc822");
-        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{receiver});
-        i.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
-        i.putExtra(Intent.EXTRA_TEXT   , emailBody);
-        i.putExtra(Intent.EXTRA_STREAM , Uri.fromFile(file));
+        emailIntent.setType("message/rfc822");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{receiver});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT   , emailBody);
+
+        for (File file: files) {
+            uris.add(Uri.fromFile(file));
+        }
+        emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM , uris);
+
         try {
-            startActivity(Intent.createChooser(i, "Send mail..."));
+            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(getActivity(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
         }

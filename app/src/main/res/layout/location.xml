@@ -66,7 +66,30 @@
         android:layout_toEndOf="@id/gyroscopeText"
         android:layout_alignTop="@id/gyroscopeText"
         android:layout_marginStart="20dp"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        />
+
+    <TextView
+        android:id="@+id/magnetoMeterText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/magnetometerTitle"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_below="@id/gyroscopeValue"
+        />
+
+    <TextView
+        android:id="@+id/magnetoMeterValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/magnetoMeterText"
+        android:layout_alignTop="@id/magnetoMeterText"
+        android:layout_marginStart="20dp"
+        android:textSize="15sp"
+        />
 
     <Button
         android:id="@+id/logButton"
